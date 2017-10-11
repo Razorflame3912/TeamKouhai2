@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 
 app = Flask(__name__)
 app.secret_key = 'THE TING GO SKRRRA PA PA KA KA KA'
@@ -16,16 +16,18 @@ def root():
 
 @app.route('/welcome', methods=['GET','POST'])
 def welcome():
-
     if 'user' not in session:
         if 'username' not in request.form or request.form['username'] == u'':
-            return render_template('error.html', err='forgot your username')
+            flash('Bad username.')
+            return redirect(url_for('root'))
         else:
             enteredUser = request.form['username']
             # print repr(enteredUser)
 
         if 'pass' not in request.form or request.form['pass'] == u'':
-            return render_template('error.html', err='forgot your password')
+            flash('Bad password. Make it better!')
+            return redirect(url_for('root'))
+
         else:
             enteredPass = request.form['pass']
             # print enteredPass
@@ -33,8 +35,8 @@ def welcome():
             session['user'] = enteredUser
             session['pass'] = enteredPass
         else:
-            return render_template('error.html', err='typed an incorrect username and password')
-
+            flash('Could not authenticate.')
+            return redirect(url_for('root'))
     return render_template('welcome.html',name=session['user'])
 
 if __name__ == '__main__':
